@@ -19,8 +19,19 @@ y = y.to(device)
 # Compute Gaussian
 z = torch.exp(-(x**2+y**2)/2.0)
 
+# Compute Sine
+a = torch.sin(x) * torch.sin(y)
+
+# Compute Cosine
+b = torch.cos(x)
+
+# Multiply Gaussian and Sine
+c = z * a
+
 #plot
-print(z)
-plt.imshow(z.cpu().numpy())#Updated!
+# print(z)
+# print(x)
+plt.imshow(c.cpu().numpy())
 plt.tight_layout()
 plt.show()
+

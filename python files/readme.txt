@@ -1,1 +1,1 @@
-HI 
+Hi this is my first pattern recognition assignment

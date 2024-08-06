@@ -33,9 +33,12 @@ for i in range(200):
 #plot
 import matplotlib.pyplot as plt
 fig = plt.figure(figsize=(16,10))
+
 def processFractal(a):
+
     """Display an array of iteration counts as a
     colorful picture of a fractal."""
+
     a_cyclic = (6.28*a/20.0).reshape(list(a.shape)+[1])
     img = np.concatenate([10+20*np.cos(a_cyclic),
     30+50*np.sin(a_cyclic),
@@ -43,7 +46,10 @@ def processFractal(a):
     img[a==a.max()] = 0
     a = img
     a = np.uint8(np.clip(a, 0, 255))
+
     return a
+
+# plotting
 plt.imshow(processFractal(ns.cpu().numpy()))
 plt.tight_layout(pad=0)
 plt.show()
