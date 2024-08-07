@@ -23,7 +23,7 @@ z = torch.exp(-(x**2+y**2)/2.0)
 a = torch.sin(x) * torch.sin(y)
 
 # Compute Cosine
-b = torch.cos(x)
+b = torch.cos(x) * torch.cos(y)
 
 # Multiply Gaussian and Sine
 c = z * a
