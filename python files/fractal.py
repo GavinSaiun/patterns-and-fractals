@@ -1,58 +1,74 @@
 import torch
-import numpy as np
-
-# Device configuration
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-# Use NumPy to create a 2D array of complex numbers on [-2,2]x[-2,2]
-Y, X = np.mgrid[-1.8:1.8:0.005, -2.5:1.5:0.005]
-
-# High-resolution zoom 
-# Y, X = np.mgrid[-0.1:0.1:0.0003, -0.2:0.34:0.0005]
-
-# load into PyTorch tensors
-x = torch.Tensor(X)
-y = torch.Tensor(Y)
-z = torch.complex(x, y) # important!
-
-zs = z.clone() # Updated!
-ns = torch.zeros_like(z)
-
-# transfer to the GPU device
-z = z.to(device)
-zs = zs.to(device)
-ns = ns.to(device)
-
-# Burning Ship Fractal computation
-for i in range(200):
-    zs_real = torch.abs(torch.real(zs))
-    zs_imag = torch.abs(torch.imag(zs))
-    zs_ = torch.complex(zs_real, zs_imag)
-    zs_ = zs_ * zs_ + z
-    not_diverged = torch.abs(zs_) < 4.0
-    ns += not_diverged
-    zs = zs_
-
-# plot
 import matplotlib.pyplot as plt
-fig = plt.figure(figsize=(16,10))
 
-def processFractal(a):
 
-    """Display an array of iteration counts as a
-    colorful picture of a fractal."""
+"""
+My implementation of a fractal, named Ikeda Map
+the Ikeda map is a discrete-time dynamical system given by the formula
+    x1 = 1 + u * (x * cos(t) - y * sin(t))
+    y1 = u * (x * sin(t) + y * cos(t))
+    t = 0.4 - 6 / (1 + x ** 2 + y ** 2)
+For u ≥ 0.6, this system has a chaotic attractor.
+"""
+def ikeda_map(u: float, points=100, iterations=300):
+    """
+    Args:
+        u:float
+            ikeda parameter
+        points:int
+            number of starting points
+        iterations:int
+            number of iterations
+    """
+    
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
+    x = 10 * torch.randn(points, 1, device=device)
+    y = 10 * torch.randn(points, 1, device=device)
+    
+    for n in range(points):
+        X = compute_ikeda_trajectory(u, x[n][0], y[n][0], iterations, device)
 
-    a_cyclic = (6.28*a/20.0).reshape(list(a.shape)+[1])
-    img = np.concatenate([10+20*np.cos(a_cyclic),
-    30+50*np.sin(a_cyclic),
-    155-80*np.cos(a_cyclic)], 2)
-    img[a==a.max()] = 0
-    a = img
-    a = np.uint8(np.clip(a, 0, 255))
+        plot_ikeda_trajectory(X)
+    
+    return plt
 
-    return a
+def compute_ikeda_trajectory(u: float, x: float, y: float, N: int, device: torch.device):
+    """Calculate a full trajectory
 
-# plotting
-plt.imshow(processFractal(ns.cpu().numpy()))
-plt.tight_layout(pad=0)
-plt.show()
+    Args:
+        u - is the ikeda parameter
+        x, y - coordinates of the starting point
+        N - the number of iterations
+        device - the device to perform computations on
+
+    Returns:
+        A PyTorch tensor of shape (N, 2).
+    """
+    X = torch.zeros((N, 2), device=device)
+    
+    for n in range(N):
+        X[n] = torch.tensor([x, y], device=device)
+        
+        t = 0.4 - 6 / (1 + x ** 2 + y ** 2)
+        x1 = 1 + u * (x * torch.cos(t) - y * torch.sin(t))
+        y1 = u * (x * torch.sin(t) + y * torch.cos(t))
+        
+        x = x1
+        y = y1   
+        
+    return X
+
+def plot_ikeda_trajectory(X) -> None:
+    """
+    Plot the whole trajectory
+
+    Args:
+        X: torch.Tensor
+            trajectory of an associated starting-point
+    """
+    plt.plot(X[:,0].cpu().numpy(), X[:, 1].cpu().numpy(), "k")
+
+# Plot the Ikeda Map
+ikeda_map(0.918).show()
+

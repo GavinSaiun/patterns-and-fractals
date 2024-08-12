@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 
 
 print("PyTorch Version:", torch.__version__)
+
+# ensures the right computational device is being used 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 X, Y = np.mgrid[-4.0:4:0.01, -4.0:4:0.01]
@@ -31,7 +33,12 @@ c = z * a
 #plot
 # print(z)
 # print(x)
-plt.imshow(c.cpu().numpy())
+# plt.imshow(z.cpu().numpy())
+
+plt.imshow(a.cpu().numpy())
+
+# plt.imshow(c.cpu().numpy())
+
 plt.tight_layout()
 plt.show()
 
