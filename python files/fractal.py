@@ -10,7 +10,7 @@ the Ikeda map is a discrete-time dynamical system given by the formula
     t = 0.4 - 6 / (1 + x ** 2 + y ** 2)
 For u ≥ 0.6, this system has a chaotic attractor.
 """
-def ikeda_map(u: float, points=100, iterations=300):
+def ikeda_map(u: float, points=20, iterations=1000):
     """
     Args:
         u:float
