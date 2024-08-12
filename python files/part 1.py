@@ -8,6 +8,7 @@ print("PyTorch Version:", torch.__version__)
 # ensures the right computational device is being used 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+# creates 2 multi-dimensional grids which are assigned variables
 X, Y = np.mgrid[-4.0:4:0.01, -4.0:4:0.01]
 
 # load into PyTorch tensors
