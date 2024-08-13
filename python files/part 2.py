@@ -9,8 +9,9 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 Y, X = np.mgrid[-1.3:1.3:0.005, -2:1:0.005]
 
 
+
 # High-resolution zoom 
-Y, X = np.mgrid[-0.9:0.11:0.001, -0.7:0.7:0.001]
+# Y, X = np.mgrid[-0.4:0.4:0.001, -0.3:0.6:0.001]
 
 # load into PyTorch tensors, converts numpy array into a tensor
 x = torch.Tensor(X)
@@ -33,31 +34,31 @@ ns = ns.to(device)
 # a collection of complex numbers that do not diverge under 
 # repeated iterations
 # z0 is fixed, c is not constant, identifies which c value generates a bounded sequence
-for i in range(200):
-    #Compute the new values of z: z^2 + x
-    zs_ = zs*zs + z
-    #Have we diverged with this new value?
-    not_diverged = torch.abs(zs_) < 4.0
-    #Update variables to compute
-    ns += not_diverged
-    zs = zs_
+# for i in range(200):
+#     #Compute the new values of z: z^2 + x
+#     zs_ = zs*zs + z
+#     #Have we diverged with this new value?
+#     not_diverged = torch.abs(zs_) < 4.0
+#     #Update variables to compute
+#     ns += not_diverged
+#     zs = zs_
 
 # Julia Set computation
 # Definition: a collection of complex numbers that do not diverge under
 # repeated iterations
 # z is not fixed, c is a constant, identifies which initial value of z generates a bounded sequence
-# c = torch.complex(torch.tensor(-0.7), torch.tensor(0.3)).to(device)
-# for i in range(200):
-#     # Julia Set Formula
-#     zs_ = zs * zs + c
-#     # Checks what elements have not diverged i.e. less than 4
-#     not_diverged = torch.abs(zs_) < 4.0
+c = torch.complex(torch.tensor(-0.7), torch.tensor(0.3)).to(device)
+for i in range(200):
+    # Julia Set Formula
+    zs_ = zs * zs + c
+    # Checks what elements have not diverged i.e. less than 4
+    not_diverged = torch.abs(zs_) < 4.0
 
-#     # Count how many points not diverged
-#     ns += not_diverged
+    # Count how many points not diverged
+    ns += not_diverged
 
-#     # Update for next iteration
-#     zs = zs_
+    # Update for next iteration
+    zs = zs_
 
 
 fig = plt.figure(figsize=(16,10))

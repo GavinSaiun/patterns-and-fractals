@@ -20,7 +20,8 @@ def ikeda_map(u: float, points=20, iterations=1000):
         iterations:int
             number of iterations
     """
-    
+    # TORCH, ensures computations are offloaded to the gpu if availiable, which allows
+    # parallel computing 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     x = 10 * torch.randn(points, 1, device=device)
@@ -48,8 +49,12 @@ def compute_ikeda_trajectory(u: float, x: float, y: float, N: int, device: torch
     X = torch.zeros((N, 2), device=device)
     
     for n in range(N):
+
+        # TORCH, ensures all starting points in ikeda are handled by tensors
+        # which allows the efficient computation of multi-dimensional arrays
         X[n] = torch.tensor([x, y], device=device)
         
+        # TORCH trig funcitons allow all elements of the tensor to be transformed
         t = 0.4 - 6 / (1 + x ** 2 + y ** 2)
         x1 = 1 + u * (x * torch.cos(t) - y * torch.sin(t))
         y1 = u * (x * torch.sin(t) + y * torch.cos(t))
